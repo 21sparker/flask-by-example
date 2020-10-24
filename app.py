@@ -23,6 +23,7 @@ db.init_app(app)
 
 q = Queue(connection=conn)
 
+from models import Result
 
 def count_and_save_words(url):
 
@@ -55,16 +56,19 @@ def count_and_save_words(url):
 
     # save the results
     try:
-        result = Result(
-            url=url,
-            result_all=raw_word_count,
-            result_no_stop_words=no_stop_words_count
-        )
-        db.session.add(result)
-        db.session.commit()
-        return result.id
-    except:
-        errors.append("Unable to add item to database.")
+        with app.app_context():
+            print("inside context")
+            result = Result(
+                url=url,
+                result_all=raw_word_count,
+                result_no_stop_words=no_stop_words_count
+            )
+            db.session.add(result)
+            db.session.commit()
+            return result.id
+    except Exception as e:
+        # errors.append("Unable to add item to database.")
+        errors.append(e)
         return {"error": errors}
 
 
