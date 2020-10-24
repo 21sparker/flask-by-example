@@ -4,7 +4,7 @@ import requests
 import operator
 import re
 import nltk
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from extensions import db
 from stop_words import stops
 from collections import Counter
@@ -97,9 +97,15 @@ def get_results(job_key):
     job = Job.fetch(job_key, connection=conn)
     
     if job.is_finished:
-        return str(job.result), 200
+        result = Result.query.filter_by(id=job.result).first()
+        results = sorted(
+            result.result_no_stop_words.items(),
+            key=operator.itemgetter(1),
+            reverse=True
+        )[:25]
+        return jsonify(results)
     else:
-        return "Nay! " + job.get_status(), 202
+        return "Nay!", 202
 
 if __name__ == '__main__':
     app.run()
