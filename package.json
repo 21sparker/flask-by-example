@@ -19,6 +19,6 @@
   "homepage": "https://github.com/21sparker/flask-by-example#readme",
   "dependencies": {
     "babel-cli": "^6.26.0",
-    "babel-preset-react-app": "^2.2.0"
+    "babel-preset-react-app": "^3.1.2"
   }
 }

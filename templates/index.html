@@ -15,6 +15,7 @@
       <div class="row">
         <div class="col-sm-5 col-sm-offset-1">
           <h1>Wordcount 3000</h1>
+          <div id="header2"></div>
           <br>
           <form role="form" method="POST" action="/">
             <div class="form-group">
@@ -55,5 +56,8 @@
     <br><br>
     <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script src="https://unpkg.com/react@17/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
   </body>
 </html>
