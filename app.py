@@ -5,7 +5,6 @@ import operator
 import re
 import nltk
 import json
-
 from flask import Flask, render_template, request, jsonify
 from extensions import db
 from stop_words import stops
@@ -81,6 +80,8 @@ def index():
 
 @app.route('/start', methods=['POST'])
 def get_counts():
+    print("start was called")
+    sys.stdout.flush()
     # this import solves a rq bug which currently exists
     from app import count_and_save_words
 
@@ -94,9 +95,7 @@ def get_counts():
     )
 
     # return created job id
-    return job.get_id()
-
-
+    return {"id": job.get_id()}
 
 
 @app.route('/results/<job_key>', methods=['GET'])
