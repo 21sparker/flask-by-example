@@ -2,7 +2,8 @@
 
 const useState = React.useState;
 
-const UrlForm = () => {
+
+const UrlForm = (setData) => {
     const [url , setUrl] = useState("");
 
     const handleChange = event => {
@@ -21,7 +22,12 @@ const UrlForm = () => {
         .then(response => response.json())
         .then(data => {
             console.log("Job id created: " + data["id"]);
-            getWordCount(data["id"]);
+            getWordCount(data["id"], data => {
+                ReactDOM.render(
+                    <ResultsTable data={Object.values(data)} />,
+                    document.querySelector("#results-container")
+                )
+            });
         })
         .catch(error => console.log(error))
     }
@@ -43,11 +49,39 @@ const UrlForm = () => {
     )
 }
 
-const getWordCount = jobID => {
-    let timeout = "";
 
+const ResultsTable = ({data}) => {
+    const [results, setResults] = useState([]);
+
+    console.log(data);
+
+    return (
+        <>
+            <h2>Frequencies</h2>
+            <br/>
+            <div id="results">
+                <table class="table table-striped" style={{ maxWidth: "300px;"}}>
+                <thead>
+                    <tr>
+                    <th>Word</th>
+                    <th>Count</th>
+                    </tr>
+                </thead>
+                    {data.map(i => (
+                        <tr>
+                            <td>{i[0]}</td>
+                            <td>{i[1]}</td>
+                        </tr>
+                    ))}
+                </table>
+            </div>
+        </>
+    )
+}
+
+const getWordCount =  (jobID, callback) => {
     const poller = () => {
-        // fire another request
+        // Fire another request
         fetch('/results/'+jobID)
         .then(response => {
             if (response.status === 202) {
@@ -60,13 +94,15 @@ const getWordCount = jobID => {
         })
         .then(data => {
             if (data !== undefined) {
-                console.log(data);
+                console.log("Finished");
+                callback(data);
             }
         })
     }
 
     poller();
 }
+
 
 ReactDOM.render(
     <UrlForm />,
