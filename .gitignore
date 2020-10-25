@@ -4,3 +4,4 @@ __pycache__/
 
 # Distribution / packaging
 env/
+node_modules
