@@ -93,6 +93,7 @@ const getWordCount =  (jobID, callback) => {
             setTimeout(poller,2000);
         })
         .then(data => {
+            console.log(data);
             if (data !== undefined) {
                 console.log("Finished");
                 callback(data);

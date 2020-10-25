@@ -111,7 +111,7 @@ def get_results(job_key):
         )[:25]
         return jsonify(results)
     else:
-        return "Nay!", 202
+        return job.get_status(), 202
 
 if __name__ == '__main__':
     app.run()
