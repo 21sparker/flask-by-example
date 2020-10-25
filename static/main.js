@@ -21,12 +21,24 @@ var UrlForm = function UrlForm(setData) {
       url = _useState2[0],
       setUrl = _useState2[1];
 
+  var _useState3 = useState(false),
+      _useState4 = _slicedToArray(_useState3, 2),
+      btnDisabled = _useState4[0],
+      setBtnDisabled = _useState4[1];
+
+  var _useState5 = useState("Submit"),
+      _useState6 = _slicedToArray(_useState5, 2),
+      btnText = _useState6[0],
+      setBtnText = _useState6[1];
+
   var handleChange = function handleChange(event) {
     setUrl(event.target.value);
   };
 
   var handleSubmit = function handleSubmit(event) {
     event.preventDefault();
+    setBtnDisabled(true);
+    setBtnText("Loading...");
     fetch('/start', {
       method: 'POST',
       headers: {
@@ -42,7 +54,9 @@ var UrlForm = function UrlForm(setData) {
       getWordCount(data["id"], function (data) {
         ReactDOM.render( /*#__PURE__*/React.createElement(ResultsTable, {
           data: Object.values(data)
-        }), document.querySelector("#results-container"));
+        }), document.querySelector("#results"));
+        setBtnDisabled(false);
+        setBtnText("Submit");
       });
     })["catch"](function (error) {
       return console.log(error);
@@ -64,29 +78,28 @@ var UrlForm = function UrlForm(setData) {
     }
   })), /*#__PURE__*/React.createElement("button", {
     type: "submit",
-    className: "btn btn-default"
-  }, "Submit"));
+    className: "btn btn-default",
+    disabled: btnDisabled
+  }, btnText));
 };
 
 var ResultsTable = function ResultsTable(_ref) {
   var data = _ref.data;
 
-  var _useState3 = useState([]),
-      _useState4 = _slicedToArray(_useState3, 2),
-      results = _useState4[0],
-      setResults = _useState4[1];
+  var _useState7 = useState([]),
+      _useState8 = _slicedToArray(_useState7, 2),
+      results = _useState8[0],
+      setResults = _useState8[1];
 
   console.log(data);
-  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("h2", null, "Frequencies"), /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("div", {
-    id: "results"
-  }, /*#__PURE__*/React.createElement("table", {
+  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("table", {
     "class": "table table-striped",
     style: {
       maxWidth: "300px;"
     }
   }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", null, "Word"), /*#__PURE__*/React.createElement("th", null, "Count"))), data.map(function (i) {
     return /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, i[0]), /*#__PURE__*/React.createElement("td", null, i[1]));
-  }))));
+  })));
 };
 
 var getWordCount = function getWordCount(jobID, callback) {

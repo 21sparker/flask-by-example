@@ -5,12 +5,16 @@ const useState = React.useState;
 
 const UrlForm = (setData) => {
     const [url , setUrl] = useState("");
+    const [btnDisabled, setBtnDisabled] = useState(false);
+    const [btnText, setBtnText] = useState("Submit");
 
     const handleChange = event => {
         setUrl(event.target.value);
     }
     const handleSubmit = event => {
         event.preventDefault();
+        setBtnDisabled(true);
+        setBtnText("Loading...");
         
         fetch('/start', {
             method: 'POST',
@@ -25,8 +29,10 @@ const UrlForm = (setData) => {
             getWordCount(data["id"], data => {
                 ReactDOM.render(
                     <ResultsTable data={Object.values(data)} />,
-                    document.querySelector("#results-container")
-                )
+                    document.querySelector("#results")
+                );
+                setBtnDisabled(false);
+                setBtnText("Submit");
             });
         })
         .catch(error => console.log(error))
@@ -44,7 +50,12 @@ const UrlForm = (setData) => {
                     style={{ maxWidth: "300px;" }}
                 />
             </div>
-            <button type="submit" className="btn btn-default">Submit</button>
+            <button 
+                type="submit" 
+                className="btn btn-default"
+                disabled={btnDisabled}>
+                    {btnText}
+            </button>
         </form>
     )
 }
@@ -57,24 +68,20 @@ const ResultsTable = ({data}) => {
 
     return (
         <>
-            <h2>Frequencies</h2>
-            <br/>
-            <div id="results">
-                <table class="table table-striped" style={{ maxWidth: "300px;"}}>
-                <thead>
-                    <tr>
+            <table class="table table-striped" style={{ maxWidth: "300px;"}}>
+            <thead>
+                <tr>
                     <th>Word</th>
                     <th>Count</th>
+                </tr>
+            </thead>
+                {data.map(i => (
+                    <tr>
+                        <td>{i[0]}</td>
+                        <td>{i[1]}</td>
                     </tr>
-                </thead>
-                    {data.map(i => (
-                        <tr>
-                            <td>{i[0]}</td>
-                            <td>{i[1]}</td>
-                        </tr>
-                    ))}
-                </table>
-            </div>
+                ))}
+            </table>
         </>
     )
 }
