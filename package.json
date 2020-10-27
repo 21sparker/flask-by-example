@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "babel src -d static",
-    "watch": "babel --watch src --out-dir static"
+    "watch": "babel --watch src --out-file static/main.js"
   },
   "repository": {
     "type": "git",
