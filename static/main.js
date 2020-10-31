@@ -18,17 +18,15 @@ var Container = function Container() {
       data = _React$useState2[0],
       setData = _React$useState2[1];
 
-  var _useState = useState(false),
-      _useState2 = _slicedToArray(_useState, 2),
-      isLoading = _useState2[0],
-      setIsLoading = _useState2[1];
+  var _React$useState3 = React.useState(false),
+      _React$useState4 = _slicedToArray(_React$useState3, 2),
+      isLoading = _React$useState4[0],
+      setIsLoading = _React$useState4[1]; // const [isError, setIsError] = React.useState(false);
 
-  var _useState3 = useState(false),
-      _useState4 = _slicedToArray(_useState3, 2),
-      isError = _useState4[0],
-      setIsError = _useState4[1];
 
-  var getData = function getData() {};
+  var handleDataUpdate = function handleDataUpdate(data) {
+    setData(data);
+  };
 
   return /*#__PURE__*/React.createElement("div", {
     "class": "container"
@@ -38,36 +36,43 @@ var Container = function Container() {
     "class": "col-sm-5 col-sm-offset-1"
   }, /*#__PURE__*/React.createElement("h1", null, "Wordcount 3000"), /*#__PURE__*/React.createElement("div", {
     id: "form-container"
-  }, /*#__PURE__*/React.createElement(UrlForm, null)), /*#__PURE__*/React.createElement("h4", null)), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement(UrlForm, {
+    handleDataUpdate: handleDataUpdate
+  })), /*#__PURE__*/React.createElement("h4", null)), /*#__PURE__*/React.createElement("div", {
     "class": "col-sm-5 col-sm-offset-1",
     id: "results-container"
   }, /*#__PURE__*/React.createElement("h2", null, "Frequencies"), /*#__PURE__*/React.createElement("div", {
     id: "results"
-  }, /*#__PURE__*/React.createElement(ResultsTable, null)), /*#__PURE__*/React.createElement(Spinner, null))));
+  }, /*#__PURE__*/React.createElement(ResultsTable, {
+    data: data
+  })), /*#__PURE__*/React.createElement(Spinner, {
+    isLoading: isLoading
+  }))));
 };
+"use strict";
 
-var getWordCount = function getWordCount(jobID, callback) {
-  var poller = function poller() {
-    // Fire another request
-    fetch('/results/' + jobID).then(function (response) {
-      if (response.status === 202) {
-        console.log("Still processing job id: " + jobID);
-      } else if (response.status === 200) {
-        return response.json();
-      }
+var ResultsTable = function ResultsTable(_ref) {
+  var data = _ref.data;
+  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("table", {
+    "class": "table table-striped",
+    style: {
+      maxWidth: "300px;"
+    }
+  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", null, "Word"), /*#__PURE__*/React.createElement("th", null, "Count"))), data.map(function (i) {
+    return /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, i[0]), /*#__PURE__*/React.createElement("td", null, i[1]));
+  })));
+};
+"use strict";
 
-      setTimeout(poller, 2000);
-    }).then(function (data) {
-      console.log(data);
-
-      if (data !== undefined) {
-        console.log("Finished");
-        callback(data);
-      }
-    });
+var Spinner = function Spinner(_ref) {
+  var isLoading = _ref.isLoading;
+  var style = {
+    display: isLoading ? "inline-block" : "none"
   };
-
-  poller();
+  return /*#__PURE__*/React.createElement("img", {
+    src: "../static/spinner.gif",
+    style: style
+  });
 };
 "use strict";
 
@@ -83,21 +88,23 @@ function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-var UrlForm = function UrlForm(setData) {
-  var _useState = useState(""),
-      _useState2 = _slicedToArray(_useState, 2),
-      url = _useState2[0],
-      setUrl = _useState2[1];
+var UrlForm = function UrlForm(_ref) {
+  var handleDataUpdate = _ref.handleDataUpdate;
 
-  var _useState3 = useState(false),
-      _useState4 = _slicedToArray(_useState3, 2),
-      btnDisabled = _useState4[0],
-      setBtnDisabled = _useState4[1];
+  var _React$useState = React.useState(""),
+      _React$useState2 = _slicedToArray(_React$useState, 2),
+      url = _React$useState2[0],
+      setUrl = _React$useState2[1];
 
-  var _useState5 = useState("Submit"),
-      _useState6 = _slicedToArray(_useState5, 2),
-      btnText = _useState6[0],
-      setBtnText = _useState6[1];
+  var _React$useState3 = React.useState(false),
+      _React$useState4 = _slicedToArray(_React$useState3, 2),
+      btnDisabled = _React$useState4[0],
+      setBtnDisabled = _React$useState4[1];
+
+  var _React$useState5 = React.useState("Submit"),
+      _React$useState6 = _slicedToArray(_React$useState5, 2),
+      btnText = _React$useState6[0],
+      setBtnText = _React$useState6[1];
 
   var handleChange = function handleChange(event) {
     setUrl(event.target.value);
@@ -120,9 +127,7 @@ var UrlForm = function UrlForm(setData) {
     }).then(function (data) {
       console.log("Job id created: " + data["id"]);
       getWordCount(data["id"], function (data) {
-        ReactDOM.render( /*#__PURE__*/React.createElement(ResultsTable, {
-          data: Object.values(data)
-        }), document.querySelector("#results"));
+        handleDataUpdate(data);
         setBtnDisabled(false);
         setBtnText("Submit");
       });
@@ -150,41 +155,6 @@ var UrlForm = function UrlForm(setData) {
     disabled: btnDisabled
   }, btnText));
 };
-"use strict";
-'use-strict';
-
-function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
-
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-
-function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
-
-function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
-
-var useState = React.useState;
-
-var ResultsTable = function ResultsTable(_ref) {
-  var data = _ref.data;
-
-  var _useState = useState([]),
-      _useState2 = _slicedToArray(_useState, 2),
-      results = _useState2[0],
-      setResults = _useState2[1];
-
-  console.log(data);
-  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("table", {
-    "class": "table table-striped",
-    style: {
-      maxWidth: "300px;"
-    }
-  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", null, "Word"), /*#__PURE__*/React.createElement("th", null, "Count"))), data.map(function (i) {
-    return /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, i[0]), /*#__PURE__*/React.createElement("td", null, i[1]));
-  })));
-};
 
 var getWordCount = function getWordCount(jobID, callback) {
   var poller = function poller() {
@@ -198,8 +168,6 @@ var getWordCount = function getWordCount(jobID, callback) {
 
       setTimeout(poller, 2000);
     }).then(function (data) {
-      console.log(data);
-
       if (data !== undefined) {
         console.log("Finished");
         callback(data);
@@ -209,5 +177,7 @@ var getWordCount = function getWordCount(jobID, callback) {
 
   poller();
 };
+"use strict";
+'use-strict';
 
-ReactDOM.render( /*#__PURE__*/React.createElement(UrlForm, null), document.querySelector("#form-container"));
+ReactDOM.render( /*#__PURE__*/React.createElement(Container, null), document.querySelector("#root"));

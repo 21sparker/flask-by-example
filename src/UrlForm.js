@@ -1,11 +1,12 @@
-const UrlForm = (setData) => {
-    const [url , setUrl] = useState("");
-    const [btnDisabled, setBtnDisabled] = useState(false);
-    const [btnText, setBtnText] = useState("Submit");
+const UrlForm = ({handleDataUpdate}) => {
+    const [url , setUrl] = React.useState("");
+    const [btnDisabled, setBtnDisabled] = React.useState(false);
+    const [btnText, setBtnText] = React.useState("Submit");
 
     const handleChange = event => {
         setUrl(event.target.value);
     }
+
     const handleSubmit = event => {
         event.preventDefault();
         setBtnDisabled(true);
@@ -22,10 +23,7 @@ const UrlForm = (setData) => {
         .then(data => {
             console.log("Job id created: " + data["id"]);
             getWordCount(data["id"], data => {
-                ReactDOM.render(
-                    <ResultsTable data={Object.values(data)} />,
-                    document.querySelector("#results")
-                );
+                handleDataUpdate(data)
                 setBtnDisabled(false);
                 setBtnText("Submit");
             });
@@ -53,4 +51,28 @@ const UrlForm = (setData) => {
             </button>
         </form>
     )
+}
+
+const getWordCount =  (jobID, callback) => {
+    const poller = () => {
+        // Fire another request
+        fetch('/results/'+jobID)
+        .then(response => {
+            if (response.status === 202) {
+                console.log("Still processing job id: " + jobID);
+            } else if (response.status === 200) {
+                return response.json();
+            }
+
+            setTimeout(poller,2000);
+        })
+        .then(data => {
+            if (data !== undefined) {
+                console.log("Finished");
+                callback(data);
+            }
+        })
+    }
+
+    poller();
 }
