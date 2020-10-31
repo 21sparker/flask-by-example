@@ -1,4 +1,4 @@
-const UrlForm = ({handleDataUpdate}) => {
+const UrlForm = ({handleDataUpdate, handleStatusUpdate}) => {
     const [url , setUrl] = React.useState("");
     const [btnDisabled, setBtnDisabled] = React.useState(false);
     const [btnText, setBtnText] = React.useState("Submit");
@@ -8,6 +8,10 @@ const UrlForm = ({handleDataUpdate}) => {
     }
 
     const handleSubmit = event => {
+
+        // Communicate that the data fetching has begun to parent component
+        handleStatusUpdate(true);
+
         event.preventDefault();
         setBtnDisabled(true);
         setBtnText("Loading...");
@@ -23,7 +27,8 @@ const UrlForm = ({handleDataUpdate}) => {
         .then(data => {
             console.log("Job id created: " + data["id"]);
             getWordCount(data["id"], data => {
-                handleDataUpdate(data)
+                handleDataUpdate(data);
+                handleStatusUpdate(false);
                 setBtnDisabled(false);
                 setBtnText("Submit");
             });

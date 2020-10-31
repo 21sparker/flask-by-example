@@ -28,6 +28,10 @@ var Container = function Container() {
     setData(data);
   };
 
+  var handleStatusUpdate = function handleStatusUpdate(isLoading) {
+    setIsLoading(isLoading);
+  };
+
   return /*#__PURE__*/React.createElement("div", {
     "class": "container"
   }, /*#__PURE__*/React.createElement("div", {
@@ -37,15 +41,14 @@ var Container = function Container() {
   }, /*#__PURE__*/React.createElement("h1", null, "Wordcount 3000"), /*#__PURE__*/React.createElement("div", {
     id: "form-container"
   }, /*#__PURE__*/React.createElement(UrlForm, {
-    handleDataUpdate: handleDataUpdate
+    handleDataUpdate: handleDataUpdate,
+    handleStatusUpdate: handleStatusUpdate
   })), /*#__PURE__*/React.createElement("h4", null)), /*#__PURE__*/React.createElement("div", {
     "class": "col-sm-5 col-sm-offset-1",
     id: "results-container"
-  }, /*#__PURE__*/React.createElement("h2", null, "Frequencies"), /*#__PURE__*/React.createElement("div", {
-    id: "results"
-  }, /*#__PURE__*/React.createElement(ResultsTable, {
+  }, /*#__PURE__*/React.createElement("h2", null, "Frequencies"), /*#__PURE__*/React.createElement(ResultsTable, {
     data: data
-  })), /*#__PURE__*/React.createElement(Spinner, {
+  }), /*#__PURE__*/React.createElement(Spinner, {
     isLoading: isLoading
   }))));
 };
@@ -53,7 +56,9 @@ var Container = function Container() {
 
 var ResultsTable = function ResultsTable(_ref) {
   var data = _ref.data;
-  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("table", {
+  return /*#__PURE__*/React.createElement("div", {
+    id: "results"
+  }, /*#__PURE__*/React.createElement("table", {
     "class": "table table-striped",
     style: {
       maxWidth: "300px;"
@@ -67,12 +72,15 @@ var ResultsTable = function ResultsTable(_ref) {
 var Spinner = function Spinner(_ref) {
   var isLoading = _ref.isLoading;
   var style = {
-    display: isLoading ? "inline-block" : "none"
+    display: isLoading ? "inline-block" : "none",
+    width: "25px",
+    height: "25px",
+    margin: "0 auto"
   };
-  return /*#__PURE__*/React.createElement("img", {
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("img", {
     src: "../static/spinner.gif",
     style: style
-  });
+  }));
 };
 "use strict";
 
@@ -89,7 +97,8 @@ function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 var UrlForm = function UrlForm(_ref) {
-  var handleDataUpdate = _ref.handleDataUpdate;
+  var handleDataUpdate = _ref.handleDataUpdate,
+      handleStatusUpdate = _ref.handleStatusUpdate;
 
   var _React$useState = React.useState(""),
       _React$useState2 = _slicedToArray(_React$useState, 2),
@@ -111,6 +120,8 @@ var UrlForm = function UrlForm(_ref) {
   };
 
   var handleSubmit = function handleSubmit(event) {
+    // Communicate that the data fetching has begun to parent component
+    handleStatusUpdate(true);
     event.preventDefault();
     setBtnDisabled(true);
     setBtnText("Loading...");
@@ -128,6 +139,7 @@ var UrlForm = function UrlForm(_ref) {
       console.log("Job id created: " + data["id"]);
       getWordCount(data["id"], function (data) {
         handleDataUpdate(data);
+        handleStatusUpdate(false);
         setBtnDisabled(false);
         setBtnText("Submit");
       });

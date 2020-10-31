@@ -1,6 +1,6 @@
 const ResultsTable = ({data}) => {
     return (
-        <>
+        <div id="results">
             <table class="table table-striped" style={{ maxWidth: "300px;"}}>
             <thead>
                 <tr>
@@ -15,6 +15,6 @@ const ResultsTable = ({data}) => {
                     </tr>
                 ))}
             </table>
-        </>
+        </div>
     )
 }
