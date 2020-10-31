@@ -115,14 +115,21 @@ var UrlForm = function UrlForm(_ref) {
       btnText = _React$useState6[0],
       setBtnText = _React$useState6[1];
 
+  var _React$useState7 = React.useState(false),
+      _React$useState8 = _slicedToArray(_React$useState7, 2),
+      displayError = _React$useState8[0],
+      setDisplayError = _React$useState8[1];
+
   var handleChange = function handleChange(event) {
     setUrl(event.target.value);
   };
 
   var handleSubmit = function handleSubmit(event) {
-    // Communicate that the data fetching has begun to parent component
-    handleStatusUpdate(true);
-    event.preventDefault();
+    event.preventDefault(); // Communicate that the data fetching has begun to parent component
+
+    handleStatusUpdate(true); // Update visual state
+
+    setDisplayError(false);
     setBtnDisabled(true);
     setBtnText("Loading...");
     fetch('/start', {
@@ -142,13 +149,22 @@ var UrlForm = function UrlForm(_ref) {
         handleStatusUpdate(false);
         setBtnDisabled(false);
         setBtnText("Submit");
+      }, function (error) {
+        handleStatusUpdate(false);
+        setBtnDisabled(false);
+        setBtnText("Submit");
+        setDisplayError(true);
       });
     })["catch"](function (error) {
-      return console.log(error);
+      console.log(error);
+      handleStatusUpdate(false);
+      setBtnDisabled(false);
+      setBtnText("Submit");
+      setDisplayError(true);
     });
   };
 
-  return /*#__PURE__*/React.createElement("form", {
+  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("form", {
     onSubmit: handleSubmit
   }, /*#__PURE__*/React.createElement("div", {
     className: "form-group"
@@ -165,25 +181,32 @@ var UrlForm = function UrlForm(_ref) {
     type: "submit",
     className: "btn btn-default",
     disabled: btnDisabled
-  }, btnText));
+  }, btnText)), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: displayError ? "block" : "none"
+    }
+  }, "There was an error submitting your URL. Please make sure it is valid."));
 };
 
-var getWordCount = function getWordCount(jobID, callback) {
+var getWordCount = function getWordCount(jobID, callback, errorCallback) {
   var poller = function poller() {
     // Fire another request
     fetch('/results/' + jobID).then(function (response) {
       if (response.status === 202) {
         console.log("Still processing job id: " + jobID);
+        setTimeout(poller, 2000);
       } else if (response.status === 200) {
         return response.json();
+      } else {
+        throw new Error("API Failed");
       }
-
-      setTimeout(poller, 2000);
     }).then(function (data) {
       if (data !== undefined) {
         console.log("Finished");
         callback(data);
       }
+    })["catch"](function (error) {
+      return errorCallback(error);
     });
   };
 

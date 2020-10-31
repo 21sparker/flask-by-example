@@ -3,7 +3,7 @@ const Spinner = ({isLoading}) => {
         display: isLoading ? "inline-block" : "none",
         width: "25px",
         height: "25px",
-        margin: "0 auto",
+        margin: "0 auto"
     }
     return (
         <div>
