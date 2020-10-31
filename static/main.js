@@ -21,8 +21,7 @@ var Container = function Container() {
   var _React$useState3 = React.useState(false),
       _React$useState4 = _slicedToArray(_React$useState3, 2),
       isLoading = _React$useState4[0],
-      setIsLoading = _React$useState4[1]; // const [isError, setIsError] = React.useState(false);
-
+      setIsLoading = _React$useState4[1];
 
   var handleDataUpdate = function handleDataUpdate(data) {
     setData(data);

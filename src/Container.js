@@ -1,7 +1,6 @@
 const Container = () => {
     const [data, setData] = React.useState([]);
     const [isLoading, setIsLoading] = React.useState(false);
-    // const [isError, setIsError] = React.useState(false);
     
     const handleDataUpdate = (data) => {
         setData(data);
